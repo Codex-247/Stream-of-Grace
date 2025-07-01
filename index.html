@@ -2844,7 +2844,46 @@
       });
 
       // EmailJS Integration
-     
+      const overlay = document.getElementById('email-overlay');
+      const modal = document.getElementById('email-modal');
+      const title = document.getElementById('modal-title');
+      const msg = document.getElementById('modal-message');
+      const closeBtn = document.getElementById('modal-close');
+      const form = document.getElementById('contact-form');
+
+      // Verify SDK loaded
+      if (typeof emailjs === 'undefined') {
+        console.error('EmailJS SDK failed to load!');
+        return;
+      }
+      emailjs.init('uN0LWdt8cjfFI3_8a'); // Public Key
+
+      // Close modal
+      closeBtn.addEventListener('click', () => {
+        modal.classList.add('hidden');
+      });
+
+      // On form submit
+      form.addEventListener('submit', e => {
+        e.preventDefault();
+        overlay.classList.remove('hidden'); // show spinner
+
+        emailjs.sendForm('service_p84jzug', 'template_2ukwhhw', form)
+          .then(() => {
+            overlay.classList.add('hidden');
+            title.textContent = 'Success!';
+            msg.textContent = 'Your message has been sent.';
+            modal.classList.remove('hidden');
+            form.reset();
+          })
+          .catch(err => {
+            overlay.classList.add('hidden');
+            console.error('EmailJS error:', err);
+            title.textContent = 'Error';
+            msg.textContent = 'Something went wrong. Please try again.';
+            modal.classList.remove('hidden');
+          });
+      });
     });
   </script>
 </body>
