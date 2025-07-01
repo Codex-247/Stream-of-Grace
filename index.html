@@ -2575,7 +2575,7 @@
           </div>
         </div>
         
-        <form class="contact-form fade-up" id="contact-form" action="send.php" method="POST">
+        <form class="contact-form fade-up" id="contact-form" method="POST">
           <div class="form-group">
             <div class="input-group">
               <input type="text" id="name" name="name" required>
@@ -2844,46 +2844,47 @@
       });
 
       // EmailJS Integration
-      const overlay = document.getElementById('email-overlay');
-      const modal = document.getElementById('email-modal');
-      const title = document.getElementById('modal-title');
-      const msg = document.getElementById('modal-message');
-      const closeBtn = document.getElementById('modal-close');
-      const form = document.getElementById('contact-form');
+     const overlay = document.getElementById('email-overlay');
+const modal = document.getElementById('email-modal');
+const title = document.getElementById('modal-title');
+const msg = document.getElementById('modal-message');
+const closeBtn = document.getElementById('modal-close');
+const form = document.getElementById('contact-form');
 
-      // Verify SDK loaded
-      if (typeof emailjs === 'undefined') {
-        console.error('EmailJS SDK failed to load!');
-        return;
-      }
-      emailjs.init('uN0LWdt8cjfFI3_8a'); // Public Key
+// Close modal
+closeBtn.addEventListener('click', () => {
+  modal.classList.add('hidden');
+});
 
-      // Close modal
-      closeBtn.addEventListener('click', () => {
-        modal.classList.add('hidden');
-      });
+// On form submit
+form.addEventListener('submit', e => {
+  e.preventDefault();
+  overlay.classList.remove('hidden'); // show loading spinner
 
-      // On form submit
-      form.addEventListener('submit', e => {
-        e.preventDefault();
-        overlay.classList.remove('hidden'); // show spinner
+  // Create a FormData object from the form
+  const formData = new FormData(form);
 
-        emailjs.sendForm('service_p84jzug', 'template_2ukwhhw', form)
-          .then(() => {
-            overlay.classList.add('hidden');
-            title.textContent = 'Success!';
-            msg.textContent = 'Your message has been sent.';
-            modal.classList.remove('hidden');
-            form.reset();
-          })
-          .catch(err => {
-            overlay.classList.add('hidden');
-            console.error('EmailJS error:', err);
-            title.textContent = 'Error';
-            msg.textContent = 'Something went wrong. Please try again.';
-            modal.classList.remove('hidden');
-          });
-      });
+  // Send it to send.php
+  fetch('send.php', {
+    method: 'POST',
+    body: formData
+  })
+    .then(response => response.text())
+    .then(responseText => {
+      overlay.classList.add('hidden');
+      title.textContent = 'Success!';
+      msg.textContent = responseText; // from PHP echo
+      modal.classList.remove('hidden');
+      form.reset();
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      overlay.classList.add('hidden');
+      title.textContent = 'Error';
+      msg.textContent = 'Something went wrong. Please try again.';
+      modal.classList.remove('hidden');
+    });
+});
     });
   </script>
 </body>
