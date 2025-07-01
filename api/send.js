@@ -13,7 +13,7 @@ export default async function handler(req, res) {
     secure: false,
     auth: {
       user: 'info@streamofgracechapel.org',
-      pass: '10DayAIChallenge@',
+      pass: '10DayAIChallenge@', // set in Vercel
     },
   });
 
@@ -33,7 +33,10 @@ export default async function handler(req, res) {
 
     res.status(200).json({ success: true, message: 'Message sent successfully!' });
   } catch (error) {
-    console.error('Email error:', error);
-    res.status(500).json({ success: false, message: 'Something went wrong. Please try again.' });
+    console.error('Email sending failed:', error.message);
+    res.status(500).json({
+      success: false,
+      message: 'Server error: ' + error.message,
+    });
   }
 }
