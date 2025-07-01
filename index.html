@@ -2843,71 +2843,80 @@
         });
       });
 
-const overlay = document.getElementById('email-overlay');
-const modal = document.getElementById('email-modal');
-const title = document.getElementById('modal-title');
-const msg = document.getElementById('modal-message');
-const closeBtn = document.getElementById('modal-close');
-const form = document.getElementById('contact-form');
+ const overlay = document.getElementById('email-overlay');
+            const modal = document.getElementById('email-modal');
+            const title = document.getElementById('modal-title');
+            const msg = document.getElementById('modal-message');
+            const closeBtn = document.getElementById('modal-close');
+            const form = document.getElementById('contact-form');
+            const submitBtn = document.getElementById('submit-btn');
 
-// Close modal when "X" button is clicked
-closeBtn.addEventListener('click', () => {
-  modal.classList.add('hidden');
-});
+            // Close modal when close button is clicked
+            closeBtn.addEventListener('click', () => {
+                modal.classList.add('hidden');
+            });
 
-// Handle form submission
-form.addEventListener('submit', e => {
-  e.preventDefault();
-  overlay.classList.remove('hidden'); // Show loading
+            // Close modal when clicking outside
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.add('hidden');
+                }
+            });
 
-  // Gather form data
-  const formData = new FormData(form);
-  const data = Object.fromEntries(formData.entries());
-
-  // Send form data to backend API
-  fetch('/api/send', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
-  })
-    .then(async res => {
-      overlay.classList.add('hidden');
-
-      // Try to parse JSON from response
-      try {
-        const result = await res.json();
-        if (result.success) {
-          title.textContent = 'Success!';
-          msg.textContent = result.message;
-        } else {
-          title.textContent = 'Error';
-          msg.textContent = result.message;
-        }
-      } catch (err) {
-        title.textContent = 'Error';
-        msg.textContent = 'Unexpected server response.';
-        console.error('JSON parse error:', err);
-      }
-
-      modal.classList.remove('hidden');
-      form.reset();
-    })
-    .catch(async err => {
-      // Handle network errors or unexpected issues
-      overlay.classList.add('hidden');
-      title.textContent = 'Error';
-
-      try {
-        const errorText = await err.text?.();
-        msg.textContent = 'Server error: ' + errorText;
-      } catch (e) {
-        msg.textContent = 'Something went wrong. Please try again.';
-        console.error('Fetch error:', err);
-      }
-
-      modal.classList.remove('hidden');
-    });
-});
+            // Handle form submission
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                // Show loading overlay
+                overlay.classList.remove('hidden');
+                submitBtn.disabled = true;
+                
+                // Gather form data
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData.entries());
+                
+                try {
+                    // Send form data to backend API
+                    const response = await fetch('/api/send', {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json' 
+                        },
+                        body: JSON.stringify(data)
+                    });
+                    
+                    // Hide loading overlay
+                    overlay.classList.add('hidden');
+                    submitBtn.disabled = false;
+                    
+                    // Parse response
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        title.textContent = 'Success!';
+                        msg.textContent = result.message;
+                        form.reset(); // Clear form on success
+                    } else {
+                        title.textContent = 'Error';
+                        msg.textContent = result.message;
+                    }
+                    
+                    // Show modal
+                    modal.classList.remove('hidden');
+                    
+                } catch (error) {
+                    // Hide loading overlay
+                    overlay.classList.add('hidden');
+                    submitBtn.disabled = false;
+                    
+                    // Show error modal
+                    title.textContent = 'Error';
+                    msg.textContent = 'Network error. Please check your connection and try again.';
+                    modal.classList.remove('hidden');
+                    
+                    console.error('Fetch error:', error);
+                }
+            });
     });
   </script>
 </body>
