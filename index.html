@@ -2843,47 +2843,68 @@
         });
       });
 
-      const overlay = document.getElementById('email-overlay');
+   const overlay = document.getElementById('email-overlay');
 const modal = document.getElementById('email-modal');
 const title = document.getElementById('modal-title');
 const msg = document.getElementById('modal-message');
 const closeBtn = document.getElementById('modal-close');
 const form = document.getElementById('contact-form');
 
+// Close modal when "X" button is clicked
 closeBtn.addEventListener('click', () => {
   modal.classList.add('hidden');
 });
 
+// Handle form submission
 form.addEventListener('submit', e => {
   e.preventDefault();
-  overlay.classList.remove('hidden'); // show loading
+  overlay.classList.remove('hidden'); // Show loading
 
+  // Gather form data
   const formData = new FormData(form);
   const data = Object.fromEntries(formData.entries());
 
+  // Send form data to backend API
   fetch('/api/send', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
   })
-    .then(res => res.json())
-    .then(res => {
+    .then(async res => {
       overlay.classList.add('hidden');
-      if (res.success) {
-        title.textContent = 'Success!';
-        msg.textContent = res.message;
-      } else {
+
+      // Try to parse JSON from response
+      try {
+        const result = await res.json();
+        if (result.success) {
+          title.textContent = 'Success!';
+          msg.textContent = result.message;
+        } else {
+          title.textContent = 'Error';
+          msg.textContent = result.message;
+        }
+      } catch (err) {
         title.textContent = 'Error';
-        msg.textContent = res.message;
+        msg.textContent = 'Unexpected server response.';
+        console.error('JSON parse error:', err);
       }
+
       modal.classList.remove('hidden');
       form.reset();
     })
-    .catch(err => {
-      console.error('Error:', err);
+    .catch(async err => {
+      // Handle network errors or unexpected issues
       overlay.classList.add('hidden');
       title.textContent = 'Error';
-      msg.textContent = 'Something went wrong. Please try again.';
+
+      try {
+        const errorText = await err.text?.();
+        msg.textContent = 'Server error: ' + errorText;
+      } catch (e) {
+        msg.textContent = 'Something went wrong. Please try again.';
+        console.error('Fetch error:', err);
+      }
+
       modal.classList.remove('hidden');
     });
 });
