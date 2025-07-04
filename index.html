@@ -2662,7 +2662,12 @@
       <p>&copy; 2025 Stream of Grace Chapel Int'l. All Rights Reserved.</p>
     </div>
   </footer>
-
+ <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+<script>
+  (function(){
+    emailjs.init("R_s_d01TPKlpSRB0s"); // Replace with your public key
+  })();
+</script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       // Navbar scroll effect
@@ -2843,87 +2848,54 @@
         });
       });
 
- const overlay = document.getElementById('email-overlay');
-            const modal = document.getElementById('email-modal');
-            const title = document.getElementById('modal-title');
-            const msg = document.getElementById('modal-message');
-            const closeBtn = document.getElementById('modal-close');
-            const form = document.getElementById('contact-form');
-            const submitBtn = document.getElementById('submit-btn');
+  const overlay = document.getElementById('email-overlay');
+  const modal = document.getElementById('email-modal');
+  const title = document.getElementById('modal-title');
+  const msg = document.getElementById('modal-message');
+  const closeBtn = document.getElementById('modal-close');
+  const form = document.getElementById('contact-form');
+  const submitBtn = document.getElementById('submit-btn');
 
-            // Close modal when close button is clicked
-            closeBtn.addEventListener('click', () => {
-                modal.classList.add('hidden');
-            });
+  // Close modal when close button is clicked
+  closeBtn.addEventListener('click', () => {
+    modal.classList.add('hidden');
+  });
 
-            // Close modal when clicking outside
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    modal.classList.add('hidden');
-                }
-            });
+  // Close modal when clicking outside
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.classList.add('hidden');
+    }
+  });
 
-            // Handle form submission
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                
-                // Show loading overlay
-                overlay.classList.remove('hidden');
-                submitBtn.disabled = true;
-                
-                // Gather form data
-                const formData = new FormData(form);
-                const data = Object.fromEntries(formData.entries());
-                
-                try {
-                    // Send form data to backend API
-                    const response = await fetch('/api/send', {
-                        method: 'POST',
-                        headers: { 
-                            'Content-Type': 'application/json' 
-                        },
-                        body: JSON.stringify(data)
-                    });
-                    
-                    // Hide loading overlay
-                    overlay.classList.add('hidden');
-                    submitBtn.disabled = false;
-                    
-                    // Parse response
-                    const result = await response.json();
-                    
-                    if (result.success) {
-                        title.textContent = 'Success!';
-                        msg.textContent = result.message;
-                        form.reset(); // Clear form on success
-                    } else {
-                        title.textContent = 'Error';
-                        msg.textContent = result.message;
-                    }
-                    
-                    // Show modal
-                    modal.classList.remove('hidden');
-                    
-                } catch (error) {
-                    // Hide loading overlay
-                    overlay.classList.add('hidden');
-                    submitBtn.disabled = false;
-                    
-                    // Show error modal
-                    title.textContent = 'Error';
-                    msg.textContent = 'Network error. Please check your connection and try again.';
-                    modal.classList.remove('hidden');
-                    
-                    console.error('Fetch error:', error);
-                }
-            });
+  // Handle form submission with EmailJS
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    
+    overlay.classList.remove('hidden');
+    submitBtn.disabled = true;
+
+    emailjs.sendForm('service_u1tvpd7', 'template_653t6an', form)
+      .then(() => {
+        overlay.classList.add('hidden');
+        submitBtn.disabled = false;
+
+        title.textContent = 'Success!';
+        msg.textContent = 'Your message has been sent.';
+        form.reset();
+        modal.classList.remove('hidden');
+      })
+      .catch(error => {
+        overlay.classList.add('hidden');
+        submitBtn.disabled = false;
+
+        title.textContent = 'Error';
+        msg.textContent = 'Something went wrong. Please try again.';
+        modal.classList.remove('hidden');
+        console.error('EmailJS error:', error);
+      });
+  });
     });
   </script>
-  <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
-<script>
-  (function(){
-    emailjs.init("R_s_d01TPKlpSRB0s"); // Replace with your public key
-  })();
-</script>
 </body>
 </html>
