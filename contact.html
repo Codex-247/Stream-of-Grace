@@ -1360,70 +1360,56 @@
             <p class="form-description">Fill out the form below and we'll get back to you as soon as possible.</p>
           </div>
           
-          <form id="contactForm" action="https://formsubmit.co/streamofgraceministries@gmail.com" method="POST">
-            <!-- Form Configuration -->
-            <input type="hidden" name="_subject" value="New message from Stream of Grace website">
-            <input type="hidden" name="_template" value="table">
-            <input type="hidden" name="_captcha" value="false">
-            <input type="hidden" name="_next" value="https://streamofgrace.org/thank-you.html">
-            
-            <div class="form-group">
-              <div class="input-group">
-                <input type="text" id="firstName" name="firstName" placeholder=" " required>
-                <label for="firstName">First Name</label>
-                <div class="error-message">Please enter your first name</div>
-              </div>
-              
-              <div class="input-group">
-                <input type="text" id="lastName" name="lastName" placeholder=" " required>
-                <label for="lastName">Last Name</label>
-                <div class="error-message">Please enter your last name</div>
-              </div>
-            </div>
-            
-            <div class="form-group">
-              <div class="input-group">
-                <input type="email" id="email" name="email" placeholder=" " required>
-                <label for="email">Email Address</label>
-                <div class="error-message">Please enter a valid email address</div>
-              </div>
-              
-              <div class="input-group">
-                <input type="tel" id="phone" name="phone" placeholder=" ">
-                <label for="phone">Phone Number (Optional)</label>
-                <div class="error-message">Please enter a valid phone number</div>
-              </div>
+          <form class="contact-form fade-up" id="contact-form">
+          <div class="form-group">
+            <div class="input-group">
+              <input type="text" id="name" name="name" required>
+              <label for="name">Your Name</label>
+              <div class="input-highlight"></div>
             </div>
             
             <div class="input-group">
-              <select id="inquiryType" name="inquiryType" required>
-                <option value="" disabled selected></option>
-                <option value="general">General Inquiry</option>
-                <option value="prayer">Prayer Request</option>
-                <option value="visit">Planning a Visit</option>
-                <option value="volunteer">Volunteer Opportunities</option>
-                <option value="other">Other</option>
-              </select>
-              <label for="inquiryType">Type of Inquiry</label>
-              <div class="error-message">Please select an inquiry type</div>
+              <input type="email" id="email" name="email" required>
+              <label for="email">Your Email</label>
+              <div class="input-highlight"></div>
             </div>
-            
-            <div class="input-group">
-              <textarea id="message" name="message" placeholder=" " required></textarea>
-              <label for="message">Your Message</label>
-              <div class="error-message">Please enter your message</div>
-            </div>
-            
-            <button type="submit" class="submit-button" id="submitButton">
-              <div class="spinner"></div>
-              <span>Send Message</span>
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-            </button>
-          </form>
+          </div>
+          
+          <div class="input-group">
+            <input type="text" id="subject" name="subject" required>
+            <label for="subject">Subject</label>
+            <div class="input-highlight"></div>
+          </div>
+          
+          <div class="input-group">
+            <textarea id="message" name="message" rows="5" required></textarea>
+            <label for="message">Your Message</label>
+            <div class="input-highlight"></div>
+          </div>
+          
+          <button type="submit" id="submit-btn" class="submit-button">
+            <span>Send Message</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+          </button>
+        </form> 
         </div>
       </div>
     </div>
   </section>
+   <!-- Email Overlay and Modal -->
+  <div class="email-overlay hidden" id="email-overlay">
+    <div class="spinner"></div>
+  </div>
+  
+  <div class="email-modal hidden" id="email-modal">
+    <div class="modal-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+    </div>
+    <h3 class="modal-title" id="modal-title">Success!</h3>
+    <p class="modal-message" id="modal-message">Your message has been sent successfully.</p>
+    <button class="modal-close" id="modal-close">Close</button>
+  </div>
+
 
   <!-- Map Section -->
   <section class="map-section section-padding" id="location">
