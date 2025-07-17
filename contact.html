@@ -1658,92 +1658,53 @@
       }
       
       // Form validation
-      const contactForm = document.getElementById('contactForm');
-      const successMessage = document.getElementById('successMessage');
-      const newMessageBtn = document.getElementById('newMessageBtn');
-      const submitButton = document.getElementById('submitButton');
-      
-      // Validate form on submit
-      if (contactForm) {
-        contactForm.addEventListener('submit', function(e) {
-          e.preventDefault();
-          
-          // Reset all error states
-          const inputGroups = contactForm.querySelectorAll('.input-group');
-          inputGroups.forEach(group => group.classList.remove('error'));
-          
-          // Validate each field
-          let isValid = true;
-          
-          // First Name validation
-          const firstName = document.getElementById('firstName');
-          if (!firstName.value.trim()) {
-            firstName.parentElement.classList.add('error');
-            isValid = false;
-          }
-          
-          // Last Name validation
-          const lastName = document.getElementById('lastName');
-          if (!lastName.value.trim()) {
-            lastName.parentElement.classList.add('error');
-            isValid = false;
-          }
-          
-          // Email validation
-          const email = document.getElementById('email');
-          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-          if (!email.value.trim() || !emailRegex.test(email.value.trim())) {
-            email.parentElement.classList.add('error');
-            isValid = false;
-          }
-          
-          // Phone validation (optional)
-          const phone = document.getElementById('phone');
-          if (phone.value.trim()) {
-            const phoneRegex = /^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/;
-            if (!phoneRegex.test(phone.value.trim())) {
-              phone.parentElement.classList.add('error');
-              isValid = false;
-            }
-          }
-          
-          // Inquiry Type validation
-          const inquiryType = document.getElementById('inquiryType');
-          if (!inquiryType.value) {
-            inquiryType.parentElement.classList.add('error');
-            isValid = false;
-          }
-          
-          // Message validation
-          const message = document.getElementById('message');
-          if (!message.value.trim()) {
-            message.parentElement.classList.add('error');
-            isValid = false;
-          }
-          
-          // If form is valid, submit it
-          if (isValid) {
-            // Show loading state
-            submitButton.classList.add('loading');
-            submitButton.disabled = true;
-            
-            // Simulate form submission (for demo purposes)
-            setTimeout(() => {
-              // Hide form and show success message
-              contactForm.style.display = 'none';
-              successMessage.classList.add('show');
-              
-              // Reset form
-              contactForm.reset();
-              submitButton.classList.remove('loading');
-              submitButton.disabled = false;
-              
-              // In production, the form would be submitted here
-              // contactForm.submit();
-            }, 1500);
-          }
-        });
-      }
+      const overlay = document.getElementById('email-overlay');
+  const modal = document.getElementById('email-modal');
+  const title = document.getElementById('modal-title');
+  const msg = document.getElementById('modal-message');
+  const closeBtn = document.getElementById('modal-close');
+  const form = document.getElementById('contact-form');
+  const submitBtn = document.getElementById('submit-btn');
+
+  // Close modal when close button is clicked
+  closeBtn.addEventListener('click', () => {
+    modal.classList.add('hidden');
+  });
+
+  // Close modal when clicking outside
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.classList.add('hidden');
+    }
+  });
+
+  // Handle form submission with EmailJS
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    
+    overlay.classList.remove('hidden');
+    submitBtn.disabled = true;
+
+    emailjs.sendForm('service_u1tvpd7', 'template_653t6an', form)
+      .then(() => {
+        overlay.classList.add('hidden');
+        submitBtn.disabled = false;
+
+        title.textContent = 'Success!';
+        msg.textContent = 'Your message has been sent.';
+        form.reset();
+        modal.classList.remove('hidden');
+      })
+      .catch(error => {
+        overlay.classList.add('hidden');
+        submitBtn.disabled = false;
+
+        title.textContent = 'Error';
+        msg.textContent = 'Something went wrong. Please try again.';
+        modal.classList.remove('hidden');
+        console.error('EmailJS error:', error);
+      });
+  });
       
       // New message button
       if (newMessageBtn) {
